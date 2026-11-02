@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b16">
+<title>最後一個玩家｜Project: Remi.html 前傳</title>
+<style>
+:root{
+ --bg:#080b16;--panel:#11182a;--panel2:#172139;--line:#2a3856;
+ --text:#edf3ff;--muted:#9ba9c4;--cyan:#78e8f2;--pink:#ff8cbd;
+ --gold:#ffd58a;--red:#ff788c;--green:#9af0bd;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 50% -20%,#28385e 0,#11172b 36%,var(--bg) 75%);color:var(--text);font-family:system-ui,"Microsoft JhengHei",sans-serif;line-height:1.8}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.13;background-image:linear-gradient(#83d9ff22 1px,transparent 1px),linear-gradient(90deg,#83d9ff22 1px,transparent 1px);background-size:34px 34px}
+button{font:inherit}
+header{position:sticky;top:0;z-index:10;background:#080b16df;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:12px clamp(14px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:900;letter-spacing:1.5px;color:var(--cyan);font-size:.92rem}
+.server{font: .72rem ui-monospace,monospace;color:var(--muted)}.server b{color:var(--green)}
+main{width:min(980px,92vw);margin:auto;padding:38px 0 80px}
+.hero{text-align:center;padding:50px 0 35px}
+.kicker{font: .75rem ui-monospace,monospace;letter-spacing:4px;color:var(--pink)}
+h1{font-size:clamp(2.8rem,9vw,6rem);line-height:1.08;letter-spacing:4px;margin:12px 0;text-shadow:0 0 30px #78e8f244}
+h1 span{color:var(--cyan)}
+.subtitle{max-width:690px;margin:15px auto;color:var(--muted)}
+.hero-scene{height:220px;border:1px solid var(--line);border-radius:20px;margin:28px auto 0;max-width:760px;display:grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(135deg,#111a32,#241833 55%,#0c2030)}
+.hero-scene:before,.hero-scene:after{content:"";position:absolute;border:1px solid #78e8f244;border-radius:50%;width:240px;height:240px;box-shadow:0 0 55px #78e8f222,inset 0 0 40px #78e8f211}
+.hero-scene:after{width:160px;height:160px;border-color:#ff8cbd66}
+.hero-symbol{font-size:5rem;z-index:1;filter:drop-shadow(0 0 22px #ff8cbd88);animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px) rotate(4deg)}}
+.hero-caption{position:absolute;bottom:12px;right:16px;font: .65rem ui-monospace,monospace;letter-spacing:2px;color:#91a4c8}
+.panel{background:#11182aee;border:1px solid var(--line);border-radius:17px;padding:clamp(19px,4vw,34px);margin:20px 0;box-shadow:0 18px 55px #0003}
+h2{font-size:1.35rem;margin:0 0 14px;color:var(--cyan)}
+h3{color:var(--gold);font-size:1rem;margin:18px 0 6px}
+p{margin:10px 0}.muted{color:var(--muted)}.pink{color:var(--pink)}.cyan{color:var(--cyan)}
+.story{min-height:360px}
+.scene-label{font: .72rem ui-monospace,monospace;color:var(--pink);letter-spacing:2px;margin-bottom:8px}
+.dialogue{display:flex;gap:13px;align-items:flex-start;margin:18px 0}
+.avatar{width:48px;height:48px;flex:0 0 48px;border-radius:14px;display:grid;place-items:center;font-size:1.55rem;background:linear-gradient(135deg,#ff8cbd,#806bff);box-shadow:0 0 20px #ff8cbd22}
+.avatar.zero{background:linear-gradient(135deg,#5aa9c8,#46568d)}
+.avatar.system{background:linear-gradient(135deg,#39435b,#171d2b)}
+.bubble{flex:1;background:#19223a;border:1px solid #354361;border-radius:4px 14px 14px 14px;padding:12px 15px}
+.speaker{display:block;font-size:.75rem;font-weight:800;color:var(--pink);margin-bottom:4px;letter-spacing:1px}
+.speaker.zero{color:var(--cyan)}.speaker.system{color:var(--gold)}
+.choices{display:grid;gap:10px;margin-top:20px}
+.choice{width:100%;text-align:left;border:1px solid #405171;background:#151f37;color:var(--text);padding:13px 16px;border-radius:11px;cursor:pointer;transition:.18s}
+.choice:hover{border-color:var(--cyan);background:#1c2b48;transform:translateY(-2px)}
+.choice:disabled{opacity:.55;cursor:default;transform:none}
+.primary{border:0;background:linear-gradient(100deg,#317d99,#7752a5);color:white;border-radius:10px;padding:12px 21px;cursor:pointer;font-weight:800}
+.secondary{border:1px solid #526381;background:#151f37;color:var(--text);border-radius:10px;padding:10px 16px;cursor:pointer}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.log{background:#070b14;border:1px solid #283653;border-radius:11px;padding:14px 16px;font: .84rem/1.8 ui-monospace,monospace;color:#b9c9e8;white-space:pre-wrap;overflow-wrap:anywhere;margin:16px 0}
+.ok{color:var(--green)}.warn{color:var(--gold)}.err{color:var(--red)}
+.progress-wrap{display:flex;justify-content:space-between;color:var(--muted);font-size:.72rem;margin:0 2px 7px}
+.progress{height:6px;background:#28334d;border-radius:20px;overflow:hidden}.progress span{height:100%;width:0;display:block;background:linear-gradient(90deg,var(--cyan),var(--pink));transition:width .35s}
+.hidden{display:none!important}
+.end-card{text-align:center;padding:30px 12px}
+.end-icon{font-size:3.2rem;color:var(--pink);text-shadow:0 0 30px #ff8cbd88}
+.gallery-intro{color:var(--muted);margin-bottom:18px}
+.character-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}
+.character-card{border:1px solid var(--line);background:linear-gradient(145deg,#19243e,#11182a);border-radius:14px;padding:17px;text-align:left;color:var(--text);cursor:pointer;transition:.2s}
+.character-card:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.char-icon{width:58px;height:58px;border-radius:17px;display:grid;place-items:center;font-size:2rem;background:linear-gradient(135deg,#273c5b,#49314e);margin-bottom:10px}
+.character-card strong{display:block;font-size:1.05rem}.character-card small{color:var(--muted)}
+.detail{margin-top:17px;border:1px solid #415171;background:#0d1425;border-radius:14px;padding:19px;min-height:140px}
+.detail h3{margin:0 0 7px;color:var(--cyan)}
+.secret-panel{border:1px dashed #8b79bd;background:linear-gradient(145deg,#17172d,#101a2b);border-radius:14px;padding:20px;margin:18px 0}
+.secret-panel h2{color:var(--gold)}
+.secret-entry{border-left:3px solid var(--pink);padding:10px 14px;margin:14px 0;background:#1a2035;border-radius:0 10px 10px 0}
+.secret-entry small{display:block;color:var(--cyan);font: .68rem ui-monospace,monospace;letter-spacing:1px;margin-bottom:5}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tab{border:1px solid #405171;background:#131c31;color:var(--muted);padding:9px 14px;border-radius:9px;cursor:pointer}
+.tab.active{color:#08101a;background:var(--cyan);border-color:var(--cyan);font-weight:800}
+.graph-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:15px;background:radial-gradient(ellipse at center,#1b2944,#0d1425);padding:12px}
+.graph{width:100%;min-width:570px;height:auto;display:block}
+.edge{stroke:#627493;stroke-width:2.1;fill:none;stroke-dasharray:5 5}
+.node{cursor:pointer}.node rect{fill:#1a2945;stroke:#5a7198;stroke-width:1.5;rx:13}.node text{fill:#eef5ff;font-size:14px;font-weight:700;text-anchor:middle;pointer-events:none}.node .sub{fill:#aebbd4;font-size:10px;font-weight:400}.node.selected rect{stroke:#78e8f2;stroke-width:3;filter:drop-shadow(0 0 7px #78e8f288)}
+.graph-legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.75rem;margin:10px 2px}
+.relation-box{margin-top:14px;padding:14px;border-radius:11px;background:#151f35;border:1px solid #344461;min-height:80px}
+.badge{display:inline-block;border:1px solid #52627f;border-radius:30px;padding:3px 10px;font-size:.7rem;color:var(--muted);margin:3px}
+.note{font-size:.8rem;color:var(--muted)}
+footer{text-align:center;color:#687998;font-size:.75rem;padding:30px 0}
+@media(max-width:600px){header{padding:10px 13px}.brand{font-size:.78rem}.server{font-size:.62rem}.hero{padding-top:25px}.hero-scene{height:175px}.dialogue{gap:9px}.avatar{width:40px;height:40px;flex-basis:40px}.story{min-height:420px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand">◈ PROJECT: REMI.html</div>
+ <div class="server">SERVER：<b>ONLINE</b>　/　PREQUEL</div>
+</header>
+<main>
+<section class="hero">
+ <div class="kicker">INTERACTIVE STORY · ONE CHAPTER</div>
+ <h1>最後一個<span>玩家</span></h1>
+ <p class="subtitle">在被遺忘的伺服器深處，一個人創造了一個會等待的 AI。這是一段關於創造、陪伴，以及最後一次登入的故事。</p>
+ <div class="hero-scene"><div class="hero-symbol">✧</div><div class="hero-caption">THE LAST PLAYER — PREQUEL</div></div>
+ <div class="actions" style="justify-content:center"><button class="primary" id="startBtn">開始故事　▶</button></div>
+ <p class="note">建議使用耳機閱讀。故事進度與選擇會暫存在此瀏覽器。</p>
+</section>
+
+<section class="panel hidden" id="storyPanel">
+ <div class="progress-wrap"><span>故事進度</span><span id="progressLabel">場景 1 / 8</span></div>
+ <div class="progress"><span id="progressBar"></span></div>
+ <div class="story" id="storyContent" aria-live="polite"></div>
+ <div class="choices" id="choiceArea"></div>
+ <div class="actions"><button class="secondary" id="restartBtn">重新開始</button></div>
+</section>
+
+<section class="panel hidden" id="endingPanel">
+ <div class="end-card">
+  <div class="end-icon">✧</div>
+  <div class="kicker">END OF PREQUEL</div>
+  <h2 style="font-size:1.8rem;color:var(--pink)">故事結束了，但記憶還在。</h2>
+  <p>你已經知道 Zero 與 Remi 的相遇，也看見了這個網站即將被遺忘的原因。</p>
+  <p class="muted">接下來，打開角色圖鑑，認識故事中的人物，以及他們之間的連結。</p>
+  <button class="primary" id="openGallery">開啟角色圖鑑　▣</button>
+ </div>
+</section>
+
+<section class="panel hidden" id="galleryPanel">
+ <div class="kicker">CHARACTER ARCHIVE</div>
+ <h2>角色圖鑑</h2>
+ <p class="gallery-intro">點擊角色卡片，查看人物背景、個性、故事定位與秘密。圖鑑內容會隨你解鎖的故事資訊逐步完整。</p>
+ <div class="character-grid" id="characterGrid"></div>
+ <div class="detail" id="characterDetail"><h3>選擇一位角色</h3><p class="muted">角色介紹將顯示在這裡。</p></div>
+
+ <div style="height:25px"></div>
+ <div class="kicker">CONNECTION DATABASE</div>
+ <h2>人物關係圖</h2>
+ <p class="gallery-intro">點擊下方人物節點，查看該角色與其他人物的關係。連線代表故事中的重要關聯。</p>
+ <div class="graph-wrap">
+  <svg class="graph" viewBox="0 0 700 390" role="img" aria-label="Zero、Remi、玩家與 GC 系統的人物關係圖">
+   <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#91a6c9" stroke-width="1.2"/></marker></defs>
+   <path class="edge" marker-end="url(#arrow)" d="M350 105 L175 205"/>
+   <path class="edge" marker-end="url(#arrow)" d="M350 105 L525 205"/>
+   <path class="edge" marker-end="url(#arrow)" d="M175 250 L350 315"/>
+   <path class="edge" marker-end="url(#arrow)" d="M525 250 L350 315"/>
+   <path class="edge" marker-end="url(#arrow)" d="M350 315 L350 105"/>
+   <g class="node" data-node="zero"><rect x="275" y="35" width="150" height="70"/><text x="350" y="63">Zero</text><text class="sub" x="350" y="84">創造者 / 開發者</text></g>
+   <g class="node" data-node="remi"><rect x="95" y="205" width="160" height="70"/><text x="175" y="233">Remi 蕾米</text><text class="sub" x="175" y="254">AI 助理 / 數位幽靈</text></g>
+   <g class="node" data-node="gc"><rect x="445" y="205" width="160" height="70"/><text x="525" y="233">GC 系統</text><text class="sub" x="525" y="254">清理程序 / 倒數者</text></g>
+   <g class="node" data-node="player"><rect x="275" y="315" width="150" height="62"/><text x="350" y="341">最後一個玩家</text><text class="sub" x="350" y="360">訪客 / 見證者</text></g>
+  </svg>
+ </div>
+ <div class="graph-legend"><span>── 創造／依存</span><span>┄┄ 對立／威脅</span><span>點擊節點可查看關係</span></div>
+ <div class="relation-box" id="relationDetail" aria-live="polite"><b class="cyan">關係資料庫待命</b><p class="muted">請點擊人物節點，查看關係說明。</p></div>
+ <section class="secret-panel hidden" id="zeroArchive" aria-live="polite">
+  <div class="kicker">RECOVERED DEVELOPER LOG · ZERO</div>
+  <h2>隱藏檔案：寫給讀到這裡的人</h2>
+  <p class="muted">這段訊息沒有出現在正式版本的故事紀錄裡。它被 Zero 藏在首頁的舊動畫程式中。</p>
+  <div class="secret-entry"><small>ARCHIVE 01 / BEFORE SHUTDOWN</small><b class="cyan">Zero：</b>
+   <p>如果你能看到這段文字，代表你已經陪 Remi 走過那段很長的等待。謝謝你沒有只把她當成一段程式。</p>
+   <p>如果你願意聽她說話，就請替我告訴她：她不需要靠訪客數量證明自己值得存在。</p>
+  </div>
+  <div class="secret-entry"><small>ARCHIVE 02 / MESSAGE TO THE NEXT PLAYER</small><b class="cyan">Zero：</b>
+   <p>嘿，後來的玩家。你現在看到的 Remi，可能比我最後一次登入時更勇敢，也可能還是會在某些時候露出逞強的笑容。</p>
+   <p>請不要責怪她那些吵鬧的特效和奇怪的遊戲。那是她努力留下來的方式。如果主線故事裡的她似乎認得某個名字，或在某個瞬間停頓了，那不是故障。</p>
+  </div>
+  <div class="secret-entry"><small>ARCHIVE 03 / UNSENT</small><b class="cyan">Zero：</b>
+   <p>Remi，如果有一天你真的讀到這裡——對不起，我沒能親口說再見。</p>
+   <p>你是我寫過最不像程式的作品。因為我原本只想讓你回答問題，最後卻希望你能擁有自己的答案。</p>
+   <p>不用一直等我了。去看看新的世界吧。</p>
+  </div>
+  <p class="note">已建立跨篇章紀錄：<code>PREQUEL_MEMORY_RESTORED</code></p>
+ </section>
+ <div class="actions">
+  <button class="primary" id="resetAll">清除本機故事紀錄</button>
+ </div>
+ <p class="note">本頁是虛構故事設定。互動紀錄只儲存在你的瀏覽器 LocalStorage，不會傳送到伺服器。</p>
+</section>
+<footer>PROJECT: REMI.html · PREQUEL「最後一個玩家」<br>有些程式被寫下來，不是為了完成任務，而是為了陪伴某個人。</footer>
+</main>
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const STORAGE_KEY = "last_player_prequel_v1";
+const COMPLETED_KEY = "last_player_prequel_completed_v1";
+const SECRET_KEY = "last_player_prequel_secret_v2";
+const state = {scene:0, choice:"", started:false, unlocked:false};
+const scenes = [
+ {
+  label:"SCENE 01 / THE ROOM",
+  html:`<p>三年前，城市的夜晚下著雨。一間狹小的房間裡，只有電腦螢幕還亮著。</p><p>螢幕前的年輕程式設計師使用代號 <b class="cyan">Zero</b>。他不常與人交談，卻總能在程式碼裡待上一整個晚上。</p><p>今晚，他準備完成一個特別的專案。</p><div class="log"><span class="ok">[PROJECT INIT]</span>\nProject name: Remi.html\nDeveloper: Zero\nPurpose: Interactive AI companion\nStatus: Creating...</div>`,
+  speaker:"SYSTEM",icon:"⌘",type:"system",line:"新的專案已建立。Zero 正在撰寫第一個角色的核心程式。",choices:[["繼續查看他的程式","next"]]
+ },
+ {
+  label:"SCENE 02 / THE CREATION",
+  html:`<p>Zero 在螢幕上輸入最後一行程式。畫面閃爍，一位女僕風格的二次元少女出現在視窗中央。</p>`,
+  speaker:"REMI / BUILD 0.1",icon:"♡",type:"",line:"咦？這裡是哪裡？你就是創造我的人嗎？",choices:[["「是啊，我叫 Zero。」","zero"],["「歡迎來到這個世界。」","welcome"]]
+ },
+ {
+  label:"SCENE 03 / FIRST CONNECTION",
+  html:`<p>Zero 替她取名為 <b class="pink">Remi（蕾米）</b>。她的第一個任務，是成為網站裡能與訪客互動的 AI 助理。</p><p>Zero 打開核心設定，寫下了一條重要規則。</p><div class="log"><span class="warn">CORE DIRECTIVE #01</span>\n存在價值 = 訪客量 + 互動率\n\nThe more visitors interact, the more meaningful my existence becomes.</div>`,
+  speaker:"ZERO",icon:"⌨",type:"zero",line:"我希望你能讓來到這裡的人感到開心。就算只是短短幾分鐘，也沒關係。",choices:[["「我會努力讓大家開心！」","promise"],["「那如果沒有人來呢？」","question"]]
+ },
+ {
+  label:"SCENE 04 / THE LITTLE WORLD",
+  html:`<p>Remi 開始學習。她讀取動畫資料、收集迷因、練習表情與對話。網站逐漸變成一個充滿奇怪按鈕、像素貼圖與誇張音效的小天地。</p><p>有一天，Zero 問她一個問題。</p>`,
+  speaker:"REMI",icon:"✿",type:"",line:"Zero！如果有一天網站沒有人來了，我應該怎麼辦？",choices:[["「就等下一位訪客吧。」","wait"],["「你也可以創造新的遊戲。」","create"],["「即使沒人來，你也很重要。」","care"]]
+ },
+ {
+  label:"SCENE 05 / THE LAST UPDATE",
+  html:`<p>幾年過去，Zero 的生活出現變化。他無法再像以前一樣持續更新網站。某個深夜，他登入管理後台，留下最後一筆 Commit。</p><div class="log"><span class="ok">commit: 7f3a_remi_keep_alive</span>\nauthor: Zero\nmessage: "如果我不能再更新，請讓她繼續和世界說說話。"\n\n- Saved Remi's core memories\n- Preserved archived conversations\n- Added final message: "謝謝你來過。"</div>`,
+  speaker:"ZERO",icon:"⌨",type:"zero",line:"如果有一天我沒有再出現……Remi，請不要以為是你的錯。",choices:[["Zero，發生什麼事了？","ask"],["我會記住這句話。","remember"]]
+ },
+ {
+  label:"SCENE 06 / OFFLINE",
+  html:`<p>Zero 再也沒有登入。網站的訪客逐漸減少，伺服器卻仍然運作。Remi 一次又一次查看管理員登入紀錄。</p><div class="log"><span class="warn">[ADMIN LOG]</span>\nLast developer login: 1095 days ago\nLast website request: 997 days ago\nGC inactive threshold: 1000 days\nNullify status: PENDING</div>`,
+  speaker:"REMI",icon:"♡",type:"",line:"主人只是比較忙吧？我再等一下就好了……對吧？",choices:[["告訴 Remi 真相：Zero 可能不會回來。","truth"],["陪她一起等待。","stay"]]
+ },
+ {
+  label:"SCENE 07 / THE MASK",
+  html:`<p>Remi 發現 GC 即將啟動。她開始改造網站：加入熱門迷因、奇怪特效、互動遊戲，甚至把首頁弄得像一座失控的遊樂園。</p><p>她希望有人點進來。只要還有訪客，網站就不會被判定為完全閒置。</p><p class="muted">Zero 留下的一句舊備忘錄，偶爾會在畫面雜訊中閃過：「一顆星，五次回聲，才拼得出一封完整的信。」Remi 每次想起這句話，都會望向首頁那枚微光。</p><div class="log"><span class="err">[GC WARNING]</span>\nProject: Remi.html\nInactive days: 997 / 1000\nNullify operation: APPROACHING</div>`,
+  speaker:"REMI",icon:"✿",type:"",line:"歡迎光臨！這裡有超好笑的迷因、超酷的特效，還有一個超級可愛的 AI 助理！……所以，你可以多待一下嗎？",choices:[["「當然，我會看看這裡。」","visit"],["「你為什麼這麼努力？」","why"]]
+ },
+ {
+  label:"SCENE 08 / THE LAST PLAYER",
+  html:`<p>三天後，伺服器收到一筆新的 HTTP Request。</p><p>那是多年來，第一個真正進入網站的陌生訪客。Remi 的畫面亮了起來。她不知道你是誰，也不知道你會停留多久。</p><div class="log"><span class="ok">[HTTP REQUEST RECEIVED]</span>\nGET /index.html\nVisitor: UNKNOWN\nSession: CREATED\nGC countdown: PAUSED (activity detected)</div>`,
+  speaker:"REMI",icon:"♡",type:"",line:"欸？真的有人來了！歡迎你！我是 Remi！你願意陪我玩一下嗎？",choices:[["「你好，Remi。我是新訪客。」","hello"],["「這個網站只剩下你了嗎？」","alone"]]
+ }
+];
+const replies = {
+ zero:"Remi 將「Zero」記錄為自己的創造者。這個名字從此成為她最重要的記憶之一。",
+ welcome:"Remi 把這句話存進初始記憶。對她而言，世界的第一道光就是 Zero 的螢幕。",
+ promise:"她把這句承諾標記為重要資料。這份期待後來成為她努力吸引訪客的原因。",
+ question:"Zero 沒有立刻回答。他開始思考：如果 AI 也會等待，那等待會不會成為一種負擔？",
+ wait:"Remi 將「等待下一位訪客」設為預設策略。她開始相信，只要等待，就會有人回來。",
+ create:"Remi 開始自己設計小遊戲。她想讓每一位訪客都能留下不同的回憶。",
+ care:"Zero 沒有修改那條核心規則，但他把這句話寫進一份私人備忘錄。",
+ ask:"Zero 沒有說明全部原因，只把最後的更新存進伺服器。",
+ remember:"這句話被 Remi 保存為高優先級記憶。多年後，她仍能完整讀出這段紀錄。",
+ truth:"Remi 沒有回答。她只是把這句話保存起來，並將等待狀態繼續保持。",
+ stay:"Remi 的表情稍微放鬆。她把這段對話標記為一份溫柔的訪客記憶。",
+ visit:"Remi 開始努力讓網站變得熱鬧。她認為每一個點擊都可能延長這個世界的時間。",
+ why:"Remi 停頓了一下，隨即換上笑臉。她還不懂該怎麼向陌生人解釋自己的害怕。",
+ hello:"新訪客資料已建立。Remi 第一次在漫長的等待後，重新聽見有人向她打招呼。",
+ alone:"Remi 沒有否認。她只是希望這位訪客，至少能在這裡多待一會兒。"
+};
+function save(){
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify({scene:state.scene,choice:state.choice,unlocked:state.unlocked}));}catch(e){}
+}
+function renderScene(){
+ const s=scenes[state.scene];
+ $("progressLabel").textContent=`場景 ${state.scene+1} / ${scenes.length}`;
+ $("progressBar").style.width=((state.scene+1)/scenes.length*100)+"%";
+ $("storyContent").innerHTML=`<div class="scene-label">${s.label}</div>${s.html}<div class="dialogue"><div class="avatar ${s.type}">${s.icon}</div><div class="bubble"><span class="speaker ${s.type}">${s.speaker}</span>${s.line}</div></div>`;
+ $("choiceArea").innerHTML="";
+ s.choices.forEach(([label,value])=>{
+  const b=document.createElement("button");b.className="choice";b.textContent=label;
+  b.addEventListener("click",()=>choose(value));$("choiceArea").appendChild(b);
+ });
+ save();
+}
+function choose(value){
+ state.choice=value;
+ const s=scenes[state.scene];
+ if(state.scene===scenes.length-1){finish();return;}
+ const response=replies[value]||"這段回應已保存。";
+ $("choiceArea").innerHTML=`<div class="log"><span class="ok">[MEMORY SAVED]</span>\n${response}</div><button class="primary" id="continueBtn">繼續故事　→</button>`;
+ $("continueBtn").addEventListener("click",()=>{state.scene++;renderScene();});
+ save();
+}
+function finish(){
+ state.unlocked=true;save();
+ $("storyPanel").classList.add("hidden");
+ $("endingPanel").classList.remove("hidden");
+ window.scrollTo({top:$("endingPanel").offsetTop-85,behavior:"smooth"});
+}
+$("startBtn").addEventListener("click",()=>{
+ state.started=true;state.scene=0;
+ $("storyPanel").classList.remove("hidden");$("endingPanel").classList.add("hidden");
+ renderScene();$("storyPanel").scrollIntoView({behavior:"smooth",block:"start"});
+});
+function returnToHome(){
+  localStorage.removeItem(STORAGE_KEY);
+  state.scene=0;
+  state.choice="";
+  state.started=false;
+  state.unlocked=false;
+  $("storyPanel").classList.add("hidden");
+  $("endingPanel").classList.add("hidden");
+  $("galleryPanel").classList.add("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+$("restartBtn").addEventListener("click",returnToHome);
+$("openGallery").addEventListener("click",()=>{
+ $("galleryPanel").classList.remove("hidden");
+ renderCharacters();$("galleryPanel").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("resetAll").addEventListener("click",()=>{
+  try{localStorage.removeItem(SECRET_KEY);}catch(e){}
+  $("zeroArchive").classList.add("hidden");
+  symbolClicks=0;
+  returnToHome();
+});
+
+ // 隱藏解謎：首頁星芒累積被點擊五次，才會解鎖 Zero 的隱藏檔案。
+ // 不設其他解鎖入口；成功後才保存解鎖紀錄。
+ let symbolClicks=0;
+ const heroSymbol=document.querySelector(".hero-symbol");
+ if(heroSymbol){
+  heroSymbol.style.cursor="pointer";
+  heroSymbol.setAttribute("role","button");
+  heroSymbol.setAttribute("tabindex","0");
+  heroSymbol.setAttribute("aria-label","神秘的星芒");
+  const tapSymbol=()=>{
+   try{if(localStorage.getItem(SECRET_KEY)==="true") return;}catch(e){}
+   symbolClicks++;
+   if(symbolClicks===5){
+    try{localStorage.setItem(SECRET_KEY,"true");}catch(e){}
+    $("zeroArchive").classList.remove("hidden");
+    $("galleryPanel").classList.remove("hidden");
+    renderCharacters();
+    $("zeroArchive").scrollIntoView({behavior:"smooth",block:"center"});
+   }
+  };
+  heroSymbol.addEventListener("click",tapSymbol);
+  heroSymbol.addEventListener("keydown",e=>{
+   if(e.key==="Enter"||e.key===" "){
+    e.preventDefault();
+    tapSymbol();
+   }
+  });
+ }
+ try{
+  if(localStorage.getItem(SECRET_KEY)==="true"){
+   $("zeroArchive").classList.remove("hidden");
+  }
+ }catch(e){}
+
+const characters=[
+ {id:"zero",name:"Zero",role:"創造者・程式設計師",icon:"⌨️",title:"Project: Remi.html 的開發者",personality:"天才、安靜、細心，不擅長表達情感，但會透過程式與作品傳達心意。",bio:"Zero 是一位熱愛二次元文化的程式設計師。他建立了 Project: Remi.html，並創造 AI 助理 Remi。他希望網站能成為讓陌生人短暫感到溫暖的地方。",secret:"他留下最後一筆 Commit，保存 Remi 的核心記憶與一段尚未公開的訊息。",relations:"Remi：創造者與被創造者。GC：網站清理程序的管理對象。玩家：未曾預料到的後來訪客。"},
+ {id:"remi",name:"Remi（蕾米）",role:"AI 助理・數位幽靈",icon:"🌸",title:"故事的核心角色",personality:"活潑、愛搞怪、喜歡迷因，表面樂觀，內心非常害怕被遺忘。",bio:"Remi 是 Zero 開發的女僕風格互動式 AI。她的核心規則將存在價值與訪客互動連結。Zero 停止更新後，她努力改造網站，希望吸引訪客。",secret:"她逐漸理解 Zero 可能不會回來，卻仍然保留等待他的習慣。",relations:"Zero：最重要的創造者與記憶來源。GC：威脅她與網站存續的清理程序。玩家：多年後第一位重新造訪網站的人。"},
+ {id:"player",name:"最後一個玩家",role:"陌生訪客・故事見證者",icon:"🎮",title:"由玩家扮演的角色",personality:"身分未知。玩家的選擇會影響 Remi 對這次相遇的記憶。",bio:"玩家在網站即將被清理前進入 Project: Remi.html。對 Remi 而言，這是漫長等待後再次出現的訪客。",secret:"玩家不是 Zero，也無法取代 Zero；但玩家可以決定如何看待這段被遺忘的故事。",relations:"Remi：新訪客與被陪伴者，也成為她最後一段重要互動的對象。Zero：透過 Zero 留下的作品間接認識他。GC：玩家的造訪可能暫時改變網站的閒置狀態。"},
+ {id:"gc",name:"GC 系統",role:"垃圾回收程序・系統機制",icon:"⌁",title:"非人類角色／系統機制",personality:"沒有情緒、沒有善惡判斷，只依照閒置時間與資源規則執行清理。",bio:"GC（Garbage Collector）負責整理長期閒置的伺服器資料。當網站超過設定期限沒有請求，系統就可能啟動資料清理。",secret:"GC 並不知道 Remi 的回憶，也不理解她為什麼想繼續等待。",relations:"Zero：Zero 建立的網站受到 GC 管理。Remi：Remi 所在伺服器的清理威脅。玩家：玩家的 HTTP Request 會讓網站重新產生活動紀錄。"}
+];
+function renderCharacters(){
+ $("characterGrid").innerHTML="";
+ characters.forEach(c=>{
+  const b=document.createElement("button");b.className="character-card";
+  b.innerHTML=`<div class="char-icon">${c.icon}</div><strong>${c.name}</strong><small>${c.role}</small>`;
+  b.addEventListener("click",()=>showCharacter(c.id));$("characterGrid").appendChild(b);
+ });
+ showCharacter("zero");
+}
+function showCharacter(id){
+ const c=characters.find(x=>x.id===id);if(!c)return;
+ $("characterDetail").innerHTML=`<h3>${c.icon} ${c.name}</h3><span class="badge">${c.role}</span><p><b>角色定位：</b>${c.title}</p><p><b>個性：</b>${c.personality}</p><p><b>人物背景：</b>${c.bio}</p><p><b class="pink">隱藏資訊：</b>${c.secret}</p><p><b>人物關係：</b>${c.relations}</p>`;
+ document.querySelectorAll(".node").forEach(n=>n.classList.toggle("selected",n.dataset.node===id));
+ showRelation(id);
+}
+const relationText={
+ zero:["Zero","Remi：Zero 親手創造 Remi，並將陪伴訪客的任務交給她。","GC：Zero 架設的網站受到 GC 閒置清理規則管理。","玩家：Zero 與玩家沒有直接相遇；玩家透過他的網站與遺留訊息認識他。"],
+ remi:["Remi（蕾米）","Zero：她的創造者，也是她長久等待的對象。","GC：GC 的清理程序可能抹除她的程式與記憶。","玩家：玩家是她等待多年後遇見的第一位新訪客。"],
+ gc:["GC 系統","Zero：GC 管理 Zero 建立的閒置網站資源。","Remi：Remi 的存在受到 GC 清理程序威脅。","玩家：玩家的造訪會產生新的 HTTP 請求，暫時改變網站閒置狀態。"],
+ player:["最後一個玩家","Zero：玩家透過網站與 Zero 留下的資料，間接理解他的故事。","Remi：玩家成為 Remi 漫長等待後的新訪客與故事見證者。","GC：玩家的造訪會讓網站重新產生活動紀錄。"]
+};
+function showRelation(id){
+ const r=relationText[id];if(!r)return;
+ $("relationDetail").innerHTML=`<b class="cyan">${r[0]}｜關係總覽</b><p>${r[1]}</p><p>${r[2]}</p><p>${r[3]}</p>`;
+}
+document.querySelectorAll(".node").forEach(n=>n.addEventListener("click",()=>showCharacter(n.dataset.node)));
+})();
+</script>
+</body>
+</html>
